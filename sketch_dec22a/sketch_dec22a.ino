@@ -23,29 +23,18 @@ void setup() {
   Serial.println("DHT11  test!!");
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  tempLm35=lm35dz();
-  Serial.print("Lum : ");
-  Serial.print(tempLm35);
-  Serial.print("\t");
+void loop() { 
+  // initialisation lecture température et humidité
   DHT11.read(DHT11PIN);
   File *fp;
   fp=fopen("D:/Adruino","w");
   fprintf(fp,"This is testing ... \n");
   fclose(fp);
+  
   Serial.print("Humidité (%) : ");
-  Serial.print((float)DHT11.humidity,2);
+  Serial.print((float)DHT11.humidity,2);// lecture humidité
   Serial.print("\t");
-  Serial.print("Température (°C) : ");
+  Serial.print("Température (°C) : ");// lecture température
   Serial.println((float)DHT11.temperature,2); 
   delay(2000); //un délai pour que le tout soit lisible
-}
-
-float lm35dz(){
-  float reading = analogRead(lm35Pin); //LM35DZ connect to Analog pin 3
- //convert the voltage into temperature because the LM35DZ is at 10mV per °C
- float voltage = reading * 5.0 / 1023.0;
- float temperature = voltage*100.0;
- return temperature;
 }
