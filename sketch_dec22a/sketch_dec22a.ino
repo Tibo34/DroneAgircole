@@ -6,34 +6,46 @@
 #include <SD.h>
 #include <SoftwareSerial.h> 
 #include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
+
 
 
 #define DHT11PIN A0 // broche dht11 capteur humidité et température
 #define photocellPin A14// broche capetur luminosité
-#define lm35Pin A2 // lm35
+
+#define SEALEVELPRESSURE_HPA (1013.25)
 
 
 
 float tempdht; // On initialise la variable de température
 float humidtedht;
-int b=3975;
+
 dht11 DHT11;
-float tempLm35;
+
+Adafruit_BME280  bme;
+//Adafruit_BME280 bme(BME_CS, BME_MOSI, BME_MISO,  BME_SCK);
+
+
 int photocellReading;
-const byte HC12RxdPin = 4;                 
+             
 File myFile;
-const byte HC12TxdPin = 5;    
-SoftwareSerial HC12(HC12TxdPin,HC12RxdPin);
+//const byte HC12RxdPin = 4;    
+//const byte HC12TxdPin = 5;    
+//SoftwareSerial HC12(HC12TxdPin,HC12RxdPin);
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   Serial.println("DHT11  test!!");
-  //HC12.begin(9600);      
-  pinMode(7, OUTPUT);
- 
+  if (!bme.begin()) {
+    Serial.println("Could not find a valid BMP280 sensor, check wiring!");  
+   while(1);
+  }
+  
     // see if the card is present and can be initialized:
-  if (!SD.begin(53)) {
+  /*if (!SD.begin(53)) {
     Serial.println("initialization failed!");
     return;
   }
@@ -48,22 +60,30 @@ void setup() {
     } else {
     // if the file didn't open, print an error:
     Serial.println("error opening test.txt");
-  }
+  }*/
  
 }
 
 void loop() { 
+
   // initialisation lecture température et humidité
   DHT11.read(DHT11PIN);
   photocellReading = analogRead(photocellPin);
+  // BME
+
+  Serial.print("BME : ");
+ Serial.println(bme.readTemperature());
+  
+  // DHT11 
+  float humidite=DHT11.humidity;
+  float temperature=DHT11.temperature;
   String strAffiche="Lecture capteur : \n";
   
 
-  float humidite=DHT11.humidity;
-  float temperature=DHT11.temperature;
+  
   String strHumidite=String(humidite,2);
   String strTemp=String(temperature,2);
-  String humMessage="Humidité (%) : ";
+  String humMessage=" DHT11 : Humidité (%) : ";
   String temMess=" - Température (°C) : ";
   String strphoto=String(photocellReading,DEC);
   String messhoto=" lecture lumoinosité : Analog reading = ";
